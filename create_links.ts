@@ -8,8 +8,10 @@ var driver = neo4j.driver(
     neo4j.auth.basic('neo4j', 'techcrunch'));
 
 /*
+
 LOAD CSV WITH HEADERS FROM "file:///TX_graph_data.csv" AS row 
 MERGE (n:Animal {animal_id: row.id, name: row.name, org_id: row.org_id, type: row.type, species: row.species, age: row.age, status: row.status, publish_date: row.publish_date, status_changed_date: row.status_changed_date, shots_current: toBoolean(row.shots_current), org_name: row.org_name})
+
 */
 
 
@@ -43,6 +45,30 @@ function calculateWeight(animal:AnimalProperties, otherAnimal:AnimalProperties):
     return weight;
 }
 
+function isManualLink(animal:AnimalProperties, other:AnimalProperties): boolean {
+
+    let result = (animal.animal_id === "45249356" && other.org_id === "TX1274") || //Ellie Jax : Jackson_County_Happy_Tails_Animal_Shelter
+        (animal.org_id === "TX1274" && other.animal_id === "45249356") || //Ellie Jax : Jackson_County_Happy_Tails_Animal_Shelter
+        (animal.animal_id === "45675073" && other.org_id === "TX1773") || //Colt : Miniature_Pinscher_Rescue_Houston
+        (animal.org_id === "TX1773" && other.animal_id === "45675073") || //Colt : Miniature_Pinscher_Rescue_Houston
+        (animal.animal_id === "45273132" && other.org_id === "TX1773") || //Sappho : Miniature_Pinscher_Rescue_Houston
+        (animal.org_id === "TX1773" && other.animal_id === "45273132") || //Sappho : Miniature_Pinscher_Rescue_Houston
+        (animal.animal_id === "45675131" && other.org_id === "TX1773") ||  //Willa: Miniature_Pinscher_Rescue_Houston
+        (animal.org_id === "TX1773" && other.animal_id === "45675131") ||  //Willa: Miniature_Pinscher_Rescue_Houston
+        (animal.animal_id === "45734659" && other.org_id === "TX1193") || //Sandi: Pawed_Squad
+        (animal.org_id === "TX1193" && other.animal_id === "45734659"); //Sandi: Pawed_Squad
+
+    if (result) {
+        console.log("Manual Link: " + animal.name + "(" + animal.org_name + ") & " + other.name + "(" + other.org_name + ")");
+    }
+    return result;
+    // return (animal_id === "45249356" && org_id === "TX1274") || //Ellie Jax : Jackson_County_Happy_Tails_Animal_Shelter
+    //     (animal_id === "45675073" && org_id === "TX1773") || //Colt : Miniature_Pinscher_Rescue_Houston
+    //     (animal_id === "45273132" && org_id === "TX1773") || //Sappho : Miniature_Pinscher_Rescue_Houston
+    //     (animal_id === "45675131" && org_id === "TX1773") ||  //Willa: Miniature_Pinscher_Rescue_Houston
+    //     (animal_id === "45734659" && org_id === "TX1193"); //Sandi: Pawed_Squad
+}
+
 function calculateLinks(records:Record[]):Links[] {
     let links:Links[];
     links = [];
@@ -57,7 +83,8 @@ function calculateLinks(records:Record[]):Links[] {
         records.forEach(otherRecord => {
             const otherProps = otherRecord.get('n').properties;
             if (animalProperties.animal_id !== otherProps.animal_id &&
-                inSameShelter(animalProperties, otherProps)) {
+                (inSameShelter(animalProperties, otherProps) || 
+                    isManualLink(animalProperties, otherProps))) {
                     let weight = calculateWeight(animalProperties, otherProps);
                     links.push(new Links(Links.LABEL_LINKS, animalProperties, otherProps, weight));
             }
