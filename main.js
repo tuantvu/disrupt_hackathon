@@ -149,7 +149,7 @@ var stateAbbrev = "TX";
 //MAIN
 //First get the token
 getToken(function (token) { return __awaiter(void 0, void 0, void 0, function () {
-    var stream, page, hasMore, _loop_1, error_1;
+    var stream, page, hasMore, header, _loop_1, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -159,6 +159,8 @@ getToken(function (token) { return __awaiter(void 0, void 0, void 0, function ()
                 _a.trys.push([1, 5, 6, 7]);
                 page = 1;
                 hasMore = true;
+                header = 'id,name,org_id,type,species,age,status,publish_date,status_changed_date,shots_current,org_name,has_auto_immune_disease';
+                stream.write(header + "\n");
                 _loop_1 = function () {
                     var orgListResponse, orgs, orglist, animalPage, animalHasMore, animalListResponse;
                     return __generator(this, function (_a) {

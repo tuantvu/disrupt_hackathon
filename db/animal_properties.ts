@@ -10,4 +10,5 @@ export interface AnimalProperties {
     publish_date: string;
     age: string;
     status: string;
+    has_auto_immune_disease: boolean;
 }

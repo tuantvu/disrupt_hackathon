@@ -25,7 +25,12 @@ function organizationToString(organization) {
 }
 exports.organizationToString = organizationToString;
 function animalAndOrganizationToString(animal, organization) {
+    var has_auto_immune_disease = ",FALSE";
+    if (Math.random() > 0.95) {
+        has_auto_immune_disease = ",TRUE";
+    }
     return animalToString(animal) + "," +
-        cleanString(organization.name);
+        cleanString(organization.name) +
+        has_auto_immune_disease;
 }
 exports.animalAndOrganizationToString = animalAndOrganizationToString;

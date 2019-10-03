@@ -144,6 +144,8 @@ getToken(async (token) => {
 
     let page = 1;
     let hasMore = true;
+    const header = 'id,name,org_id,type,species,age,status,publish_date,status_changed_date,shots_current,org_name,has_auto_immune_disease';
+    stream.write(header + "\n");
 
     //Iterate through organizations in the state until page < total pages
     while (hasMore) {

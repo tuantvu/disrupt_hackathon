@@ -28,6 +28,12 @@ export function organizationToString(organization: Organization): string {
 }
 
 export function animalAndOrganizationToString(animal: Animal, organization: Organization): string {
+    let has_auto_immune_disease = ",FALSE";
+    if (Math.random() > 0.95) {
+        has_auto_immune_disease = ",TRUE";
+    }
+
     return animalToString(animal) + "," + 
-        cleanString(organization.name);
+        cleanString(organization.name) + 
+        has_auto_immune_disease;
 }

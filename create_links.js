@@ -40,6 +40,9 @@ var neo4j_driver_1 = require("neo4j-driver");
 var links_1 = require("./db/links");
 var driver = neo4j_driver_1.v1.driver('bolt://localhost:7687', neo4j_driver_1.v1.auth.basic('neo4j', 'techcrunch'));
 /*
+//header after creating csv
+id,name,org_id,type,species,age,status,publish_date,status_changed_date,shots_current,org_name,has_auto_immune_disease
+
 
 LOAD CSV WITH HEADERS FROM "file:///TX_graph_data.csv" AS row
 MERGE (n:Animal {animal_id: row.id, name: row.name, org_id: row.org_id, type: row.type, species: row.species, age: row.age, status: row.status, publish_date: row.publish_date, status_changed_date: row.status_changed_date, shots_current: toBoolean(row.shots_current), org_name: row.org_name})
