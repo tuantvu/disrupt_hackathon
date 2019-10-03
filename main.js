@@ -186,7 +186,7 @@ getToken(function (token) { return __awaiter(void 0, void 0, void 0, function ()
                                     stream.write(csvString + "\n");
                                 });
                                 // animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
-                                animalHasMore = animalListResponse.pagination.current_page < 10; //Remove this to retrieve more than $animalLimit * 5
+                                animalHasMore = animalListResponse.pagination.current_page < 2; //Remove this to retrieve more than $animalLimit * 2
                                 animalPage++;
                                 return [3 /*break*/, 2];
                             case 4:

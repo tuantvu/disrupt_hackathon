@@ -30,7 +30,17 @@ function inSameShelter(animal:AnimalProperties, otherAnimal:AnimalProperties): b
 }
 
 function calculateWeight(animal:AnimalProperties, otherAnimal:AnimalProperties): number {
-    return 1;
+    let weight = 0.1;
+    if (!otherAnimal.shots_current) {
+        weight += 0.4;
+    }
+    if("Baby" === otherAnimal.age) {
+        weight += 0.4;
+    } else if ("Young" === otherAnimal.age) {
+        weight += 0.2;
+    }
+
+    return weight;
 }
 
 function calculateLinks(records:Record[]):Links[] {

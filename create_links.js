@@ -64,7 +64,17 @@ function inSameShelter(animal, otherAnimal) {
     return animal.org_id === otherAnimal.org_id;
 }
 function calculateWeight(animal, otherAnimal) {
-    return 1;
+    var weight = 0.1;
+    if (!otherAnimal.shots_current) {
+        weight += 0.4;
+    }
+    if ("Baby" === otherAnimal.age) {
+        weight += 0.4;
+    }
+    else if ("Young" === otherAnimal.age) {
+        weight += 0.2;
+    }
+    return weight;
 }
 function calculateLinks(records) {
     var links;
