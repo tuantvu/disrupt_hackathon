@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+var csv_util = require("./utils/csv_util");
 var axios = require('axios');
 var fs = require('fs');
 var CLIENT_ID = "VIxvZ91ocvNlMsbIuXattj6FH1L7pDb3CDvidPuSqLuUcurHOw";
@@ -48,7 +49,7 @@ function getToken(callback) {
     })
         .then(function (response) {
         // console.log(response.data.token_type);
-        // console.log(response.data.expires_in);
+        console.log(response.data.expires_in);
         // console.log(response.data.access_token);
         callback(response.data.access_token);
         // return response.data.access_token;
@@ -68,8 +69,8 @@ function getShelter(state, limit, page, token) {
         '&limit=' + limit +
         '&page=' + page, config)
         .then(function (response) {
-        // console.log(response.data);
         var data = response.data;
+        console.log("Number of organizations: " + data.organizations.length);
         return data;
     })["catch"](function (error) {
         console.log(error);
@@ -104,8 +105,8 @@ function getAnimal(orgs, limit, page, token) {
         '&limit=' + limit +
         '&page=' + page, config)
         .then(function (response) {
-        // console.log(response.data);
         var data = response.data;
+        console.log("Number of animals: " + data.animals.length);
         return data;
     })["catch"](function (error) {
         console.log(error);
@@ -144,7 +145,7 @@ function toCSVString(organization, animal) {
         organization.id + "_" + animal.id + "," +
         parseDateAsNumber(animal.status_changed_at);
 }
-var stateAbbrev = "RI";
+var stateAbbrev = "TX";
 //MAIN
 //First get the token
 getToken(function (token) { return __awaiter(void 0, void 0, void 0, function () {
@@ -162,32 +163,35 @@ getToken(function (token) { return __awaiter(void 0, void 0, void 0, function ()
                     var orgListResponse, orgs, orglist, animalPage, animalHasMore, animalListResponse;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, getShelterByCityState("Houston", "TX", 100, page, token)];
+                            case 0: return [4 /*yield*/, getShelter(stateAbbrev, 100, page, token)];
                             case 1:
                                 orgListResponse = _a.sent();
                                 orgs = orgListResponse.organizations;
                                 orglist = orgs.map(function (org) { return org.id; });
                                 animalPage = 1;
-                                animalHasMore = false;
+                                animalHasMore = true;
                                 _a.label = 2;
                             case 2:
                                 if (!animalHasMore) return [3 /*break*/, 4];
                                 return [4 /*yield*/, getAnimal(orglist, 100, animalPage, token)];
                             case 3:
                                 animalListResponse = _a.sent();
-                                console.log("animals:" + animalListResponse.animals.map(function (animal) { return animal.name; }).join(", "));
+                                // console.log("animals:" + animalListResponse.animals.map(animal => animal.name).join(", "));
                                 animalListResponse.animals.forEach(function (animal) {
                                     var org = orgListResponse.organizations.find(function (org) { return org.id === animal.organization_id; });
-                                    var csvString = toCSVString(org, animal);
-                                    // console.log(toCSVString(org, animal));
+                                    // const csvString = toCSVString(org, animal);
+                                    var csvString = csv_util.animalAndOrganizationToString(animal, org);
+                                    // console.log(csvString);
                                     //Write to CSV
                                     stream.write(csvString + "\n");
                                 });
-                                animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
+                                // animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
+                                animalHasMore = animalListResponse.pagination.current_page < 10; //Remove this to retrieve more than $animalLimit * 5
                                 animalPage++;
                                 return [3 /*break*/, 2];
                             case 4:
                                 hasMore = orgListResponse.pagination.current_page < orgListResponse.pagination.total_pages;
+                                hasMore = false; //Remove this to grab more than $limit
                                 page++;
                                 return [2 /*return*/];
                         }

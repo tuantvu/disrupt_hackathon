@@ -2,6 +2,7 @@ import { Organization } from "./dataobjects/organization";
 import { OrganizationListResponse } from "./api/organization_api";
 import { AnimalListResponse } from "./api/animal_api";
 import { Animal } from "./dataobjects/animal";
+import * as csv_util from "./utils/csv_util";
 import { WriteStream } from "fs";
 
 const axios = require('axios');
@@ -19,7 +20,7 @@ function getToken(callback: (token:string) => void) {
     })
     .then(response => {
         // console.log(response.data.token_type);
-        // console.log(response.data.expires_in);
+        console.log(response.data.expires_in);
         // console.log(response.data.access_token);
         callback(response.data.access_token);
         // return response.data.access_token;
@@ -43,8 +44,8 @@ function getShelter(state: string,limit: number, page: number, token: string): P
       '&page=' + page
       , config)
     .then(response => {
-        // console.log(response.data);
         let data = response.data as OrganizationListResponse;
+        console.log("Number of organizations: " + data.organizations.length);
         return data;
     })
     .catch(error => {
@@ -86,8 +87,8 @@ function getAnimal(orgs: string[], limit: number, page: number, token: string): 
       '&page=' + page
       , config)
     .then(response => {
-        // console.log(response.data);
         let data = response.data as AnimalListResponse;
+        console.log("Number of animals: " + data.animals.length);
         return data;
     })
     .catch(error => {
@@ -131,7 +132,7 @@ function toCSVString(organization: Organization, animal: Animal): string {
     parseDateAsNumber(animal.status_changed_at);
 }
 
-const stateAbbrev = "RI";
+const stateAbbrev = "TX";
 
 //MAIN
 //First get the token
@@ -154,27 +155,30 @@ getToken(async (token) => {
       // console.log("orgListIDs: " + orglist);
       
       let animalPage = 1;
-      let animalHasMore = false;
+      let animalHasMore = true;
 
       //Iterate through animals in the state until page < total pages
       while (animalHasMore) {
         //Animals can take in a list of org ids, which will save us calls since some orgs may have less
         //than 100 animals. That way we don't call org at a time
         const animalListResponse = await getAnimal(orglist, 100, animalPage, token);
-        console.log("animals:" + animalListResponse.animals.map(animal => animal.name).join(", "));
+        // console.log("animals:" + animalListResponse.animals.map(animal => animal.name).join(", "));
 
         animalListResponse.animals.forEach(animal => { 
           const org = orgListResponse.organizations.find(org => org.id === animal.organization_id);
-          const csvString = toCSVString(org, animal);
-          // console.log(toCSVString(org, animal));
+          // const csvString = toCSVString(org, animal);
+          const csvString = csv_util.animalAndOrganizationToString(animal, org);
+          // console.log(csvString);
 
           //Write to CSV
           stream.write(csvString + "\n");
         });
-        animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
+        // animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
+        animalHasMore = animalListResponse.pagination.current_page < 10; //Remove this to retrieve more than $animalLimit * 5
         animalPage++;
       }
       hasMore = orgListResponse.pagination.current_page < orgListResponse.pagination.total_pages;
+      hasMore = false; //Remove this to grab more than $limit
       page++;
     }
   } catch (error) {
