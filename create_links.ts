@@ -36,7 +36,7 @@ function inSameShelter(animal:AnimalProperties, otherAnimal:AnimalProperties): b
 
 function calculateWeight(animal:AnimalProperties, otherAnimal:AnimalProperties): number {
     let weight = 0.1;
-    if (!otherAnimal.shots_current) {
+    if (!otherAnimal.shots_current || otherAnimal.has_auto_immune_disease) {
         weight += 0.4;
     }
     if("Baby" === otherAnimal.age) {

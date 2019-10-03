@@ -45,7 +45,7 @@ id,name,org_id,type,species,age,status,publish_date,status_changed_date,shots_cu
 
 
 LOAD CSV WITH HEADERS FROM "file:///TX_graph_data.csv" AS row
-MERGE (n:Animal {animal_id: row.id, name: row.name, org_id: row.org_id, type: row.type, species: row.species, age: row.age, status: row.status, publish_date: row.publish_date, status_changed_date: row.status_changed_date, shots_current: toBoolean(row.shots_current), org_name: row.org_name})
+MERGE (n:Animal {animal_id: row.id, name: row.name, org_id: row.org_id, type: row.type, species: row.species, age: row.age, status: row.status, publish_date: row.publish_date, status_changed_date: row.status_changed_date, shots_current: toBoolean(row.shots_current), org_name: row.org_name, has_auto_immune_disease: toBoolean(row.has_auto_immune_disease)})
 
 */
 function retrieveAllAnimals() {
@@ -70,7 +70,7 @@ function inSameShelter(animal, otherAnimal) {
 }
 function calculateWeight(animal, otherAnimal) {
     var weight = 0.1;
-    if (!otherAnimal.shots_current) {
+    if (!otherAnimal.shots_current || otherAnimal.has_auto_immune_disease) {
         weight += 0.4;
     }
     if ("Baby" === otherAnimal.age) {
