@@ -174,7 +174,7 @@ getToken(async (token) => {
           stream.write(csvString + "\n");
         });
         // animalHasMore = animalListResponse.pagination.current_page < animalListResponse.pagination.total_pages;
-        animalHasMore = animalListResponse.pagination.current_page < 10; //Remove this to retrieve more than $animalLimit * 5
+        animalHasMore = animalListResponse.pagination.current_page < 2; //Remove this to retrieve more than $animalLimit * 2
         animalPage++;
       }
       hasMore = orgListResponse.pagination.current_page < orgListResponse.pagination.total_pages;
